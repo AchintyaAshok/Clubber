@@ -15,4 +15,9 @@ class VenuesController < ApplicationController
 		@venue = Venue.find(params[:id])
 		render json: @venue
 	end
+
+	def create
+		# use this to create a new venue
+	end
+
 end
