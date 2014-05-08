@@ -47,3 +47,5 @@ Event4 = Event.find_or_create_by_name!(
 )
 Event4.venue = JosieWoods
 Event4.save!
+
+commentA = Comment.create!(event_id: 1, text: "this is the first comment ever.")
