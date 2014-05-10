@@ -1,6 +1,18 @@
 class EventsController < ApplicationController
 	def index # GET /events
 		@events = Event.all
+		@events.each do |item|
+			#test to see if we find any media
+			mediaFiles = item.media
+			puts mediaFiles
+			mediaFiles.each do |file|
+				print "\n\tName: ", file.name
+				print "\n\tPath: ", file.location
+				print "\n\tSize: ", file.size
+				puts
+			end
+		end
+
 		render json: @events
 	end
 

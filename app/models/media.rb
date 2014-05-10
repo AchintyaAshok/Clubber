@@ -1,4 +1,5 @@
 class Media < ActiveRecord::Base
-	has_many :event_media
+	#eventfiles
+	has_many :event_files
 	has_many :events, through: :event_files
 end
