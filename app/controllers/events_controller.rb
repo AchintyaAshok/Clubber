@@ -5,10 +5,8 @@ class EventsController < ApplicationController
 			# get all the comments for the event, return this
 			print item.name
 			comments = getEventComments item.id
-			#item << {:comments => comments}
-			#item["comments"] => comments
 		end
-		@events = @events.includes(:venue, :comments).all
+		#@events = @events.includes(:venue, :comments).all
 		render json: @events
 	end
 
@@ -23,14 +21,18 @@ class EventsController < ApplicationController
 
 
 	def getEventComments(event_id)
-		print "getting event -> ", event_id, "\n"
+		#print "getting event -> ", event_id, "\n"
 		comments = Comment.where(:event_id => event_id)
+		inc = 0
 		comments.each do |c|
-			puts c.text
+			print "\n\t", inc, ": [", c.text, "]\n"
+			inc += 1
+		end
+		if inc == 0
+			print "\n\tNO COMMENTS\n"
 		end
 
-		comments
-		#Comment.event_id
+		comments 	#return the list of comments
 	end
 
 end

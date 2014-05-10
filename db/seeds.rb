@@ -48,4 +48,7 @@ Event4 = Event.find_or_create_by_name!(
 Event4.venue = JosieWoods
 Event4.save!
 
-commentA = Comment.create!(event_id: 1, text: "this is the first comment ever.")
+commentA = Comment.find_or_create_by_text!(event_id: 1, text: "this is the first comment ever.")
+commentB = Comment.find_or_create_by_text!(event_id: 1, text: "second!")
+commentC = Comment.find_or_create_by_text!(event_id: 1, text: "the awkward third comment")
+
