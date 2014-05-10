@@ -3,8 +3,10 @@ class EventsController < ApplicationController
 		@events = Event.all		
 		@events.each do |item|
 			# get all the comments for the event, return this
-			print item.name
-			comments = getEventComments item.id
+			# print item.name
+			#comments = getEventComments item.id
+			comments = item.comments
+			puts comments
 		end
 		#@events = @events.includes(:venue, :comments).all
 		render json: @events
@@ -19,19 +21,19 @@ class EventsController < ApplicationController
 		# use this to create a new venue
 	end	
 
-	def getEventComments(event_id)
-		#print "getting event -> ", event_id, "\n"
-		comments = Comment.where(:event_id => event_id)
-		inc = 0
-		comments.each do |c|
-			print "\n\t", inc, ": [", c.text, "]\n"
-			inc += 1
-		end
-		if inc == 0
-			print "\n\tNO COMMENTS\n"
-		end
+	# def getEventComments(event_id)
+	# 	#print "getting event -> ", event_id, "\n"
+	# 	comments = Comment.where(:event_id => event_id)
+	# 	inc = 0
+	# 	comments.each do |c|
+	# 		print "\n\t", inc, ": [", c.text, "]\n"
+	# 		inc += 1
+	# 	end
+	# 	if inc == 0
+	# 		print "\n\tNO COMMENTS\n"
+	# 	end
 
-		comments 	#return the list of comments
-	end
+	# 	comments 	#return the list of comments
+	# end
 
 end
