@@ -21,8 +21,9 @@ FirstEvent = Event.find_or_create_by_name!(
 FirstEvent.venue = WebsterHall
 FirstEvent.save!
 
-TestMedia = Media.find_or_create_by_name(name: "first media thing!", location: '~/Desktop/test.jpeg', size: 843776)
-TestMedia2 = FirstEvent.media.find_or_create_by_name(name: "Event1's file", location: '~/Desktop/test.jpeg', size: 843776)
+#TestMedia = Media.find_or_create_by_name(name: "first media thing!", location: '~/Desktop/test.jpeg', size: 843776)
+TestMedia = FirstEvent.media.find_or_create_by_name(name: "Event1's file", location: '~/Desktop/test.jpeg', size: 843776)
+
 
 Event2 = Event.find_or_create_by_name!(
 	name: 'Happy Hour Special', 

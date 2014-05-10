@@ -6,6 +6,7 @@ Clubber::Application.routes.draw do
   resources :venues
   resources :events do
     resources :comments
+    resources :media
   end
 
   # You can have the root of your site routed with "root"
