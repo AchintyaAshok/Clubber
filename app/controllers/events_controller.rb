@@ -1,14 +1,10 @@
 class EventsController < ApplicationController
 	def index # GET /events
-		@events = Event.all		
-		@events.each do |item|
-			# get all the comments for the event, return this
-			# print item.name
-			#comments = getEventComments item.id
-			comments = item.comments
-			puts comments
-		end
-		#@events = @events.includes(:venue, :comments).all
+		@events = Event.all
+		objectToRender = {}
+		# @events.each do |item|
+		# 	comments = item.comments
+		# end
 		render json: @events
 	end
 
