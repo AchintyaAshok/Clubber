@@ -1,5 +1,5 @@
 class EventsController < ApplicationController
-	def index
+	def index # GET /events
 		@events = Event.all		
 		@events.each do |item|
 			# get all the comments for the event, return this
@@ -10,7 +10,7 @@ class EventsController < ApplicationController
 		render json: @events
 	end
 
-	def show
+	def show # GET /events/[id]
 		@event = Event.find(params[:id])
 		render json: @event
 	end
@@ -18,7 +18,6 @@ class EventsController < ApplicationController
 	def create
 		# use this to create a new venue
 	end	
-
 
 	def getEventComments(event_id)
 		#print "getting event -> ", event_id, "\n"
