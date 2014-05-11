@@ -46,6 +46,12 @@ Event3 = Event.find_or_create_by_name!(
 Event3.venue = Pacha
 Event3.save!
 
+Event3.media.find_or_create_by_name(name: "Pacha1", location:'/Users/achintyaashok/Documents/My Projects/Clubber/MediaFiles/EventMedia/pacha.jpg', size: 500000)
+Event3.media.find_or_create_by_name(name: "Pacha2", location:'/Users/achintyaashok/Documents/My Projects/Clubber/MediaFiles/EventMedia/pacha2.jpg', size: 500000)
+Event3.media.find_or_create_by_name(name: "Pacha3", location:'/Users/achintyaashok/Documents/My Projects/Clubber/MediaFiles/EventMedia/pacha3.jpg', size: 500000)
+
+
+
 Event4 = Event.find_or_create_by_name!(
 	name: 'Pool & Drinks', 
 	description: 'lorem ipsum',
