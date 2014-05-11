@@ -1,7 +1,7 @@
 class CommentsController < ApplicationController
 	def index	# GET events/[event_id]/comments
 		# get all comments where the event id is listed
-		comments = Comment.where(event_id = params[:id])
+		comments = Event.find(params[:event_id]).comments
 		render json: comments
 	end
 

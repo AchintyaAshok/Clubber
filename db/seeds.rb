@@ -23,6 +23,9 @@ FirstEvent.save!
 
 #TestMedia = Media.find_or_create_by_name(name: "first media thing!", location: '~/Desktop/test.jpeg', size: 843776)
 TestMedia = FirstEvent.media.find_or_create_by_name(name: "Event1's file", location: '~/Desktop/test.jpeg', size: 843776)
+FirstEvent.media.find_or_create_by_name(name: "Webster1", location:'/Users/achintyaashok/Documents/My Projects/Clubber/MediaFiles/EventMedia/webster.jpg', size: 500000)
+FirstEvent.media.find_or_create_by_name(name: "Webster2", location:'/Users/achintyaashok/Documents/My Projects/Clubber/MediaFiles/EventMedia/webster2.jpg', size: 500000)
+FirstEvent.media.find_or_create_by_name(name: "Webster3", location:'/Users/achintyaashok/Documents/My Projects/Clubber/MediaFiles/EventMedia/webster3.jpg', size: 500000)
 
 
 Event2 = Event.find_or_create_by_name!(
