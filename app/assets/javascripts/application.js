@@ -14,4 +14,8 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
-//= require bootstrap
+//= require jquery-1.11.1.min
+//= require bootstrap.min
+//= require underscore-min
+//= require backbone-min
+
