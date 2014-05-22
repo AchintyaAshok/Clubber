@@ -1,8 +1,4 @@
-`//= require javascripts/comments.js.coffee`
-
 jQuery ->
-
-	# define ["./comment"], ('com') ->
 
 	class MainRouter extends Backbone.Router
 		routes:
@@ -20,6 +16,7 @@ jQuery ->
 
 
 		show_view:(newView) =>
+			console.log 'in show view'
 			if @currentView is not null then @currentView.close()
 			@currentView = newView
 			$('#container-main').html @currentView.render().el
@@ -28,7 +25,10 @@ jQuery ->
 		home: ->
 			console.log 'in home!'
 			view = new Home
-			@show_view view
+			view.fetch_information()
+			console.log 'the initialized view', view
+			@show_view(view)
+			console.log 'end of home func'
 
 		# table_view: =>
 		# 	console.log 'in table view'
@@ -47,17 +47,31 @@ jQuery ->
 	class Home extends Backbone.View
 		tagName: 'div'
 
-		initialize: ->
+		initialize: =>
 			console.log "initialize backbone view -> Home"
-			@events = new Events
+
+		fetch_information: =>
+			console.log 'fetching information for home view'
+			@events = new EventCollection
 			@events.fetch
 				async: false
-				success:(ev) =>
-				error:(response) =>
+				success:(ev) ->
+					console.log 'yay fetched my shit!'
+					return @
+				error:(response) ->
 					console.log 'Did not fetch events: ', response
 
 		render: ->
+			#console.log 'in home render', @events
 			template = '''<h>WELCOME</h>'''
+			eventViewItems = []
+			for elem in @events.models
+				newView = new EventView
+					model: elem
+				eventViewItems.push newView #add it to our list of managed event views
+
+			console.log 'list of views managed: ', eventViewItems
+
 			$(@el).html(_.template(template))
 			@	# last statement returns this
 
@@ -65,8 +79,19 @@ jQuery ->
 			@remove()
 
 
+	class EventView extends Backbone.View
+
+		initialize:(options) =>
+			#console.log 'initialize eventView: ', options
+			@model = options.model
+			@listenTo(this.model, "change", this.render) #when the model is modified, we update the view
+			#console.log 'initializing event view'
+			#console.log "event view model: ", @model
+
+
 	class Event extends Backbone.Model
 		url: '/events'
+
 		initialize:(options) ->
 			#console.log 'intialized event: ', @id
 			@mediaObjects = new MediaCollection
@@ -74,13 +99,13 @@ jQuery ->
 			@mediaObjects.fetch
 				async: true
 				success:(eve) ->
-				error: (res) ->
+				error:(res) ->
 					console.log 'Did not fetch Media Files: ', res
 			@comments = new CommentCollection
 				event_id: @id
 			@comments.fetch
-				async:true 
-				success:(e)->
+				async: true 
+				success:(e) ->
 				error:(e) ->
 					console.log 'Did not fetch Comments: ', e
 
@@ -88,13 +113,14 @@ jQuery ->
 
 
 	
-	class Events extends Backbone.Collection
+	class EventCollection extends Backbone.Collection
 		url: '/events'
 		model: Event
 
 
 	class Media extends Backbone.Model
 		url: '/media'
+
 		initialize:(options) ->
 			#console.log 'initialized Media obj', options
 			if options? and options.event_id?
@@ -114,6 +140,7 @@ jQuery ->
 
 	class Comment extends Backbone.Model
 		url: '/comments'
+
 		initialize:(options) ->
 			if options? and options.event_id?
 				@url = '/events/' + options.event_id + '/comments/' + @id
@@ -132,6 +159,7 @@ jQuery ->
 
 	class Venue extends Backbone.Model
 		url: '/venues'
+
 		initialize:(options) ->
 			console.log 'initializing venues'
 
