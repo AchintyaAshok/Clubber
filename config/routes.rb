@@ -5,8 +5,7 @@ Clubber::Application.routes.draw do
   # standard REST resources:
   resources :venues
   resources :events do
-    resources :comments
-    resources :media
+    resources :comments, :media
   end
 
   # You can have the root of your site routed with "root"
@@ -14,6 +13,9 @@ Clubber::Application.routes.draw do
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
+
+  get 'home' => 'home#index'
+
   get 'venues/index'
   get 'events/index'
 
