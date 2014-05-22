@@ -2,69 +2,143 @@
 
 jQuery ->
 
-	define ["./comment"], ('com') ->
+	# define ["./comment"], ('com') ->
 
-		class MainRouter extends Backbone.Router
-			routes:
-				'' : 'home'
-				# 'find_table' : 'table_view'
-				# 'select_items': 'menu_view'
-
-
-			# Basically a constructor for the AppRouter, this method retrieves the collection
-			# of all events (without any filters) and the list of categories. 
-			initialize: ->
-				@currentView = null
-				# window.App.VenmoUser = new User
-				# window.App.vent.bind('table-selection', @table_view)
+	class MainRouter extends Backbone.Router
+		routes:
+			'' : 'home'
+			# 'find_table' : 'table_view'
+			# 'select_items': 'menu_view'
 
 
-			show_view:(newView) =>
-				if @currentView is not null then @currentView.close()
-				@currentView = newView
-				$('#container-main').html @currentView.render().el
+		# Basically a constructor for the AppRouter, this method retrieves the collection
+		# of all events (without any filters) and the list of categories. 
+		initialize: ->
+			@currentView = null
+			# window.App.VenmoUser = new User
+			# window.App.vent.bind('table-selection', @table_view)
 
 
-			home: ->
-				console.log 'in home!'
-				view = new Home
-				@show_view view
-
-			# table_view: =>
-			# 	console.log 'in table view'
-			# 	@navigate('makeMyTable')
-			# 	view = new TableView
-			# 	@show_view(view)
-
-			# menu_view:(id) =>
-			# 	console.log('get_menu', id)
-			# 	menuView = new MenuView
-			# 		id: id
-			# 	@navigate('select_items/' + id)
-			# 	@show_view(menuView)
+		show_view:(newView) =>
+			if @currentView is not null then @currentView.close()
+			@currentView = newView
+			$('#container-main').html @currentView.render().el
 
 
-		class Home extends Backbone.View
+		home: ->
+			console.log 'in home!'
+			view = new Home
+			@show_view view
 
-			tagName: 'div'
+		# table_view: =>
+		# 	console.log 'in table view'
+		# 	@navigate('makeMyTable')
+		# 	view = new TableView
+		# 	@show_view(view)
 
-			initialize: ->
-				console.log "initialize backbone view -> Home"
-				c = new com.Comment('Bob', '123123123')
-
-			render: ->
-				template = '''<h>WELCOME</h>'''
-				$(@el).html(_.template(template))
-				c.print_something()
-				@	# last statement returns this
-
-			close: ->
-				@remove()
+		# menu_view:(id) =>
+		# 	console.log('get_menu', id)
+		# 	menuView = new MenuView
+		# 		id: id
+		# 	@navigate('select_items/' + id)
+		# 	@show_view(menuView)
 
 
-		window.App =
-			"AppRouter": MainRouter
-			"vent": _.extend({}, Backbone.Events)
-			#'VenmoUser': User
+	class Home extends Backbone.View
+		tagName: 'div'
+
+		initialize: ->
+			console.log "initialize backbone view -> Home"
+			@events = new Events
+			@events.fetch
+				async: false
+				success:(ev) =>
+				error:(response) =>
+					console.log 'Did not fetch events: ', response
+
+		render: ->
+			template = '''<h>WELCOME</h>'''
+			$(@el).html(_.template(template))
+			@	# last statement returns this
+
+		close: ->
+			@remove()
+
+
+	class Event extends Backbone.Model
+		url: '/events'
+		initialize:(options) ->
+			#console.log 'intialized event: ', @id
+			@mediaObjects = new MediaCollection
+				event_id: @id
+			@mediaObjects.fetch
+				async: true
+				success:(eve) ->
+				error: (res) ->
+					console.log 'Did not fetch Media Files: ', res
+			@comments = new CommentCollection
+				event_id: @id
+			@comments.fetch
+				async:true 
+				success:(e)->
+				error:(e) ->
+					console.log 'Did not fetch Comments: ', e
+
+			console.log 'event obj: ', @
+
+
+	
+	class Events extends Backbone.Collection
+		url: '/events'
+		model: Event
+
+
+	class Media extends Backbone.Model
+		url: '/media'
+		initialize:(options) ->
+			#console.log 'initialized Media obj', options
+			if options? and options.event_id?
+				@event_id = options.event_id
+
+	class MediaCollection extends Backbone.Collection
+		url: '/media'
+		model: Media
+
+		initialize:(options) =>
+			#console.log 'initialize MediaFiles with options: ', options
+			@event_id = options.event_id
+			@url = "/events/" + @event_id + "/media"
+			#console.log 'modified media-files url: ', @url
+			@
+
+
+	class Comment extends Backbone.Model
+		url: '/comments'
+		initialize:(options) ->
+			if options? and options.event_id?
+				@url = '/events/' + options.event_id + '/comments/' + @id
+
+	class CommentCollection extends Backbone.Collection
+		url: '/comments'
+		model: Comment
+
+		initialize:(options) =>
+			#console.log 'initialize CommentCollection: ', options
+			@event_id = options.event_id
+			@url = 'events/' + @event_id + "/comments"
+			#console.log 'modified comment-files url: ', @url
+			@
+
+
+	class Venue extends Backbone.Model
+		url: '/venues'
+		initialize:(options) ->
+			console.log 'initializing venues'
+
+
+	window.App =
+		"AppRouter": MainRouter
+		"vent": _.extend({}, Backbone.Events)
+		#'VenmoUser': User
 
 
