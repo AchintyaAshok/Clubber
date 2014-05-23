@@ -13,8 +13,8 @@ Clubber::Application.routes.draw do
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
-
-  get 'home' => 'home#index'
+  root 'home#index'
+  get 'index' => 'home#index'
 
   get 'venues/index'
   get 'events/index'

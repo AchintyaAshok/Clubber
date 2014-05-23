@@ -50,8 +50,15 @@
 
 <script type="text/javascript">
 	$(function() {
-		var router = new window.App.AppRouter();
-		var hist = Backbone.history.start();
+		if(window.hist == undefined || window.hist == false){
+			console.log("Starting Backbone History!")
+			window.router = new window.App.BackboneRouter();
+			window.hist = Backbone.history.start({pushState:true});
+		}
+		else{
+			window.router.route('')
+			console.log("Backbone History already started")
+		}
 	});
 </script>
 

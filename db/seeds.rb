@@ -6,11 +6,30 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-WebsterHall = Venue.find_or_create_by_name!(name: 'Webster Hall', address: '125 East 11th Street, New York, NY 10003')
-TurtleBay = Venue.find_or_create_by_name!(name: 'Turtle Bay Tavern', address: '987 2nd Avenue, Manhattan, NY 10022')
-Pacha = Venue.find_or_create_by_name!(name: 'Club Pacha', address: '618 West 46th Street, New York, NY 10036')
-JosieWoods = Venue.find_or_create_by_name!(name: 'Josie Woods Pub', address: '11 Waverly Place, New York, NY 10003')
-TomorrowLand = Venue.find_or_create_by_name!(name: 'Tomorrowland', address: 'Dirkputstraat 260, 2850, Boom, Belgium')
+WebsterHall = Venue.find_or_create_by_name!(
+	name: 'Webster Hall', 
+	address: '125 East 11th Street, New York, NY 10003',
+	description: "Located in New York City's East Village, Webster Hall has hosted performances and major events from across all spectrums of culture since it's construction in 1886.  This 40,000 square foot architectural gem, landmarked by New York City in 2008, is soaked in NYC history and lore."
+)
+TurtleBay = Venue.find_or_create_by_name!(
+	name: 'Turtle Bay Tavern', 
+	address: '987 2nd Avenue, Manhattan, NY 10022',
+	description: "For the past 17 years Turtle Bay has been the number one party bar destination in New York City. No one throws a party like we can so come find out what makes us the best!"
+)
+Pacha = Venue.find_or_create_by_name!(
+	name: 'Club Pacha', 
+	address: '618 West 46th Street, New York, NY 10036',
+	description: "The first Pacha opened in the beach town of Sitges in 1967. Six years later, in 1973 during the hippy movement, Pacha arrived in Ibiza. Since then the brand has been constantly developing together with time, fashion and trends, and bringing new ideas, improvements and all kind of extravagances to the night scene; although always maintaining its singularity, its particular style and spirit."
+)
+JosieWoods = Venue.find_or_create_by_name!(
+	name: 'Josie Woods Pub', 
+	address: '11 Waverly Place, New York, NY 10003',
+	description: "Josie Wood's Pub is located conveniently by NYU-but it's more than just a place for college kids to convene! Featuring flat screen TVs playing your favorite sporting events, $1 pool tables, and $10 beer pitchers during happy hour, Josie Woods is perfect for someone looking for a fun, laid back ambiance of any age! One could say Josie Woods is a feel-good, chill place replete with a retro-inspired undertone accomplished by the jukebox, dartboard and wooden tables and booths!"
+)
+TomorrowLand = Venue.find_or_create_by_name!(
+	name: 'Tomorrowland', 
+	address: 'Dirkputstraat 260, 2850, Boom, Belgium'
+)
 
 FirstEvent = Event.find_or_create_by_name!(
 	name: 'First Club Event!', 

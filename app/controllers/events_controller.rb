@@ -1,15 +1,16 @@
 class EventsController < ApplicationController
-	# attr_accessor :mainImage
+	attr_accessor :mainImage
 	def index # GET /events
 		debug = false
 		@events = Event.all
-		@events.each do |item|
-			@mainImage = item.media.first()
-			@venueName = item.venue
-			item.attributes[:mainImage] = @mainImage
-			item.attributes[:venueName] = @venueName
-			puts item
-		end
+		# @events.map! { |item|
+		# 	@mainImage = item.media.first()
+		# 	@venueName = item.venue.name
+		# 	#item << @mainImage
+		# 	#item.attributes[:mainImage] = @mainImage
+		# 	#item.attributes[:venueName] = @venueName
+		# 	#puts item[:mainImage], item[:venueName]
+		# }
 		
 		# if debug
 		# 	@events.each do |item|

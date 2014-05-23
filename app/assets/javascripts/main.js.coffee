@@ -3,14 +3,15 @@ jQuery ->
 	class MainRouter extends Backbone.Router
 		routes:
 			'' : 'home'
+			'home': 'home'
+			'more_info/:id': 'event_information_page'
 
 
 		# Basically a constructor for the AppRouter, this method retrieves the collection
 		# of all events (without any filters) and the list of categories. 
 		initialize: ->
 			@currentView = null
-			# window.App.VenmoUser = new User
-			# window.App.vent.bind('table-selection', @table_view)
+			window.App.vent.bind('event_information', @event_information_page)
 
 
 		show_view:(newView) =>
@@ -21,8 +22,17 @@ jQuery ->
 
 		home: ->
 			view = new Home
+			@navigate('home')
 			view.fetch_information()
 			#@navigate('/index')
+			@show_view(view)
+
+		event_information_page:(eventModel) =>
+			# route to more information for an event
+			console.log 'in event_information_page', eventModel
+			view = new EventPageView
+				model: eventModel
+			@navigate('more_info/' + eventModel.get('id'))
 			@show_view(view)
 
 
@@ -39,13 +49,11 @@ jQuery ->
 			@events.fetch
 				async: false
 				success:(ev) ->
-					#console.log 'yay fetched my shit!'
 					return @
 				error:(response) ->
 					console.log 'Did not fetch events: ', response
 
 		render: ->
-			#console.log 'in home render', @events
 			template = """
 				<div class="row jumbotron">
 					<h1>Welcome to your night.</h1>
@@ -53,33 +61,32 @@ jQuery ->
 				</div>
 			"""
 			$(@el).html(_.template(template))
-			eventViewItems = []
+			@eventViewItems = []
 			for elem in @events.models
 				newView = new HomePageEventView
 					model: elem
-				eventViewItems.push newView #add it to our list of managed event views
+				@eventViewItems.push newView #add it to our list of managed event views
 				$(@el).append(newView.render().el)
 				$(@el).append('''<div class='row padding'><br></div>''')
-				#console.log newView.render().el
 
-			#console.log 'list of views managed: ', eventViewItems
 			@	# last statement returns this
 
 		close: ->
+			x.remove() for x in @eventViewItems #remove all the child views
 			@remove()
 
 
-	class EventPageView
-		model: Event
+	class EventPageView extends Backbone.View
 
 		initialize:(options) ->
+			console.log 'in EventPageView', options
 			@model = options.model
 
 		fetch_media: =>
 			@mediaObjects = new MediaCollection
-				event_id: @id
+				event_id: @model.get('id')
 			@mediaObjects.fetch
-				async: true
+				async: false
 				success:(eve) ->
 					return @
 				error:(res) ->
@@ -87,17 +94,21 @@ jQuery ->
 
 		fetch_comments: =>
 			@comments = new CommentCollection
-				event_id: @id
+				event_id: @model.get('id')
 			@comments.fetch
-				async: true 
+				async: false 
 				success:(e) ->
 					return @
 				error:(e) ->
 					console.log 'Did not fetch Comments: ', e
 
-		render: ->
+		render: =>
 			@fetch_media()
 			@fetch_comments()
+			console.log 'fetched stuff', @
+
+		close: ->
+			@remove()
 
 
 
@@ -135,8 +146,8 @@ jQuery ->
 			'click #info': 'info_button_click'
 
 		info_button_click: ->
-			console.log 'info button was clicked!'
-			window.App.vent.trigger('event_information', @model.get('id')) 
+			console.log 'info button was clicked!', @model.get('id')
+			window.App.vent.trigger('event_information', @model) 
 			#inform the application via Backbone Events that we want more information!
 
 
@@ -200,7 +211,7 @@ jQuery ->
 
 
 	window.App =
-		"AppRouter": MainRouter
+		"BackboneRouter": MainRouter
 		"vent": _.extend({}, Backbone.Events)
 		#'VenmoUser': User
 
