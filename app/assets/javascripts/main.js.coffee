@@ -4,7 +4,7 @@ jQuery ->
 		routes:
 			'' : 'home'
 			'home': 'home'
-			'more_info/:id': 'event_information_page'
+			'home/more_info/:id': 'event_information_page' #TOFIX ASKS FOR ID
 
 
 		# Basically a constructor for the AppRouter, this method retrieves the collection
@@ -27,15 +27,19 @@ jQuery ->
 			#@navigate('/index')
 			@show_view(view)
 
-		event_information_page:(eventModel) =>
+		event_information_page:(options) => #options requires a hash of {id, model(if it exists)}
 			# route to more information for an event
-			console.log 'in event_information_page', eventModel
-			view = new EventPageView
-				model: eventModel
-			@navigate('more_info/' + eventModel.get('id'))
+			console.log 'in event_information_page', options
+			if options.model?
+				view = new EventPageView
+					model: options.model
+			else
+				view = new EventPageView
+					id: options.id
+			@navigate('home/more_info/' + options.id)
 			@show_view(view)
 
-
+	# MAIN HOMEPAGE VIEW
 	class Home extends Backbone.View
 		tagName: 'div'
 		className: 'container-fluid'
@@ -69,9 +73,6 @@ jQuery ->
 				$(@el).append(newView.render().el)
 				$(@el).append('''<div class='row padding'><br></div>''')
 
-			$('.mini-event').css('background-color', '#FFCC66')
-			console.log "mini-event-class objs", $('.mini-event')
-
 			@	# last statement returns this
 
 		close: ->
@@ -79,11 +80,24 @@ jQuery ->
 			@remove()
 
 
+	# PAGE TO VIEW MORE INFORMATION FOR EVENTS
 	class EventPageView extends Backbone.View
+
+		tagName: 'div'
+		className: 'container-fluid'
 
 		initialize:(options) ->
 			console.log 'in EventPageView', options
-			@model = options.model
+			if options.model is undefined
+				@model = new Event
+					id: options.id
+				@model.fetch
+					async: false
+					success:(e) ->
+					error:(e) ->
+						console.log 'EventPageView::Did not fetch Event', e
+			else
+				@model = options.model
 
 		fetch_media: =>
 			@mediaObjects = new MediaCollection
@@ -109,6 +123,64 @@ jQuery ->
 			@fetch_media()
 			@fetch_comments()
 			console.log 'fetched stuff', @
+			template = '''
+			<div class='row'>
+				<h1><%= name %> <small> presented by <strong>Some Venue</strong></small></h1>
+			</div>
+			<div id="myCarousel" class="carousel slide" style="height:500px;" data-ride="carousel">
+			      <!-- Indicators -->
+			      <ol class="carousel-indicators">
+			        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+			        <li data-target="#myCarousel" data-slide-to="1"></li>
+			        <li data-target="#myCarousel" data-slide-to="2"></li>
+			      </ol>
+			      <div class="carousel-inner">
+			        <div class="item active">
+			          <img data-src="holder.js/900x500/auto/#777:#7a7a7a/text:First slide" alt="First slide">
+			          <div class="container">
+			            <div class="carousel-caption">
+			              <h1>Example headline.</h1>
+			              <p>Note: If you're viewing this page via a <code>file://</code> URL, the "next" and "previous" Glyphicon buttons on the left and right might not load/display properly due to web browser security rules.</p>
+			              <p><a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a></p>
+			            </div>
+			          </div>
+			        </div>
+			        <div class="item">
+			          <img data-src="holder.js/900x500/auto/#666:#6a6a6a/text:Second slide" alt="Second slide">
+			          <div class="container">
+			            <div class="carousel-caption">
+			              <h1>Another example headline.</h1>
+			              <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+			              <p><a class="btn btn-lg btn-primary" href="#" role="button">Learn more</a></p>
+			            </div>
+			          </div>
+			        </div>
+			        <div class="item">
+			          <img data-src="holder.js/900x500/auto/#555:#5a5a5a/text:Third slide" alt="Third slide">
+			          <div class="container">
+			            <div class="carousel-caption">
+			              <h1>One more for good measure.</h1>
+			              <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+			              <p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
+			            </div>
+			          </div>
+			        </div>
+			      </div>
+			      <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+			      <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+			    </div><!-- /.carousel -->
+
+			</div class='row'>
+				<div class='col-md-8'>
+					<p class='lead'>Description Goes Here</p>
+				<div>
+				<div class='col-md-4'>
+					<p class='lead'>Comment Feed</p>
+				</div>
+			</div>
+			'''
+			$(@el).html(_.template(template, @model.toJSON()))
+			@
 
 		close: ->
 			@remove()
@@ -150,7 +222,7 @@ jQuery ->
 
 		info_button_click: ->
 			console.log 'info button was clicked!', @model.get('id')
-			window.App.vent.trigger('event_information', @model) 
+			window.App.vent.trigger('event_information', {id: @model.get('id'), model: @model}) 
 			#inform the application via Backbone Events that we want more information!
 
 
