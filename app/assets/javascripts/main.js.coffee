@@ -69,6 +69,9 @@ jQuery ->
 				$(@el).append(newView.render().el)
 				$(@el).append('''<div class='row padding'><br></div>''')
 
+			$('.mini-event').css('background-color', '#FFCC66')
+			console.log "mini-event-class objs", $('.mini-event')
+
 			@	# last statement returns this
 
 		close: ->
@@ -115,7 +118,7 @@ jQuery ->
 	class HomePageEventView extends Backbone.View
 
 		tagName: 'div'
-		className: 'row' # one row with 2 columns, one with text, one with a picture
+		className: 'row mini-event' # one row with 2 columns, one with text, one with a picture
 
 		initialize:(options) =>
 			#console.log 'initialize eventView: ', options
