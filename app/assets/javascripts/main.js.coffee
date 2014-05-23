@@ -136,7 +136,7 @@ jQuery ->
 			      </ol>
 			      <div class="carousel-inner">
 			        <div class="item active">
-			          <img data-src="holder.js/900x500/auto/#777:#7a7a7a/text:First slide" alt="First slide">
+			          <img data-src="holder.js/900x500" alt="First slide">
 			          <div class="container">
 			            <div class="carousel-caption">
 			              <h1>Example headline.</h1>
@@ -146,7 +146,7 @@ jQuery ->
 			          </div>
 			        </div>
 			        <div class="item">
-			          <img data-src="holder.js/900x500/auto/#666:#6a6a6a/text:Second slide" alt="Second slide">
+			          <img data-src="holder.js/900x500" alt="Second slide">
 			          <div class="container">
 			            <div class="carousel-caption">
 			              <h1>Another example headline.</h1>
@@ -156,7 +156,7 @@ jQuery ->
 			          </div>
 			        </div>
 			        <div class="item">
-			          <img data-src="holder.js/900x500/auto/#555:#5a5a5a/text:Third slide" alt="Third slide">
+			          <img data-src="holder.js/900x500" alt="Third slide">
 			          <div class="container">
 			            <div class="carousel-caption">
 			              <h1>One more for good measure.</h1>
@@ -228,14 +228,14 @@ jQuery ->
 
 
 	class Event extends Backbone.Model
-		url: '/events'
+		urlRoot: '/events'
 
 		initialize:(options) ->
 			#console.log 'intialized event: ', @id
 
 	
 	class EventCollection extends Backbone.Collection
-		url: '/events'
+		urlRoot: '/events'
 		model: Event
 
 
@@ -248,7 +248,7 @@ jQuery ->
 				@event_id = options.event_id
 
 	class MediaCollection extends Backbone.Collection
-		url: '/media'
+		urlRoot: '/media'
 		model: Media
 
 		initialize:(options) =>
@@ -260,14 +260,14 @@ jQuery ->
 
 
 	class Comment extends Backbone.Model
-		url: '/comments'
+		urlRoot: '/comments'
 
 		initialize:(options) ->
 			if options? and options.event_id?
 				@url = '/events/' + options.event_id + '/comments/' + @id
 
 	class CommentCollection extends Backbone.Collection
-		url: '/comments'
+		urlRoot: '/comments'
 		model: Comment
 
 		initialize:(options) =>
