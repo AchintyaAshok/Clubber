@@ -16,32 +16,33 @@ jQuery ->
 
 
 		show_view:(newView) =>
-			console.log 'in show view'
+			#console.log 'in show view'
 			if @currentView is not null then @currentView.close()
 			@currentView = newView
 			$('#container-main').html @currentView.render().el
 
 
 		home: ->
-			console.log 'in home!'
+			#console.log 'in home!'
 			view = new Home
 			view.fetch_information()
-			console.log 'the initialized view', view
 			@show_view(view)
-			console.log 'end of home func'
 
-		# table_view: =>
-		# 	console.log 'in table view'
-		# 	@navigate('makeMyTable')
-		# 	view = new TableView
-		# 	@show_view(view)
 
-		# menu_view:(id) =>
-		# 	console.log('get_menu', id)
-		# 	menuView = new MenuView
-		# 		id: id
-		# 	@navigate('select_items/' + id)
-		# 	@show_view(menuView)
+		###
+		table_view: =>
+			console.log 'in table view'
+			@navigate('makeMyTable')
+			view = new TableView
+			@show_view(view)
+
+		menu_view:(id) =>
+			console.log('get_menu', id)
+			menuView = new MenuView
+				id: id
+			@navigate('select_items/' + id)
+			@show_view(menuView)
+		###
 
 
 	class Home extends Backbone.View
@@ -51,12 +52,12 @@ jQuery ->
 			console.log "initialize backbone view -> Home"
 
 		fetch_information: =>
-			console.log 'fetching information for home view'
+			#console.log 'fetching information for home view'
 			@events = new EventCollection
 			@events.fetch
 				async: false
 				success:(ev) ->
-					console.log 'yay fetched my shit!'
+					#console.log 'yay fetched my shit!'
 					return @
 				error:(response) ->
 					console.log 'Did not fetch events: ', response
@@ -88,6 +89,9 @@ jQuery ->
 			#console.log 'initializing event view'
 			#console.log "event view model: ", @model
 
+		render: ->
+
+
 
 	class Event extends Backbone.Model
 		url: '/events'
@@ -109,7 +113,7 @@ jQuery ->
 				error:(e) ->
 					console.log 'Did not fetch Comments: ', e
 
-			console.log 'event obj: ', @
+			#console.log 'event obj: ', @
 
 
 	
