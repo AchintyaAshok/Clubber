@@ -3,8 +3,6 @@ jQuery ->
 	class MainRouter extends Backbone.Router
 		routes:
 			'' : 'home'
-			# 'find_table' : 'table_view'
-			# 'select_items': 'menu_view'
 
 
 		# Basically a constructor for the AppRouter, this method retrieves the collection
@@ -16,33 +14,16 @@ jQuery ->
 
 
 		show_view:(newView) =>
-			#console.log 'in show view'
 			if @currentView is not null then @currentView.close()
 			@currentView = newView
 			$('#container-main').html @currentView.render().el
 
 
 		home: ->
-			#console.log 'in home!'
 			view = new Home
 			view.fetch_information()
+			#@navigate('/index')
 			@show_view(view)
-
-
-		###
-		table_view: =>
-			console.log 'in table view'
-			@navigate('makeMyTable')
-			view = new TableView
-			@show_view(view)
-
-		menu_view:(id) =>
-			console.log('get_menu', id)
-			menuView = new MenuView
-				id: id
-			@navigate('select_items/' + id)
-			@show_view(menuView)
-		###
 
 
 	class Home extends Backbone.View
@@ -74,7 +55,7 @@ jQuery ->
 			$(@el).html(_.template(template))
 			eventViewItems = []
 			for elem in @events.models
-				newView = new EventView
+				newView = new HomePageEventView
 					model: elem
 				eventViewItems.push newView #add it to our list of managed event views
 				$(@el).append(newView.render().el)
@@ -88,7 +69,39 @@ jQuery ->
 			@remove()
 
 
-	class EventView extends Backbone.View
+	class EventPageView
+		model: Event
+
+		initialize:(options) ->
+			@model = options.model
+
+		fetch_media: =>
+			@mediaObjects = new MediaCollection
+				event_id: @id
+			@mediaObjects.fetch
+				async: true
+				success:(eve) ->
+					return @
+				error:(res) ->
+					console.log 'Did not fetch Media Files: ', res
+
+		fetch_comments: =>
+			@comments = new CommentCollection
+				event_id: @id
+			@comments.fetch
+				async: true 
+				success:(e) ->
+					return @
+				error:(e) ->
+					console.log 'Did not fetch Comments: ', e
+
+		render: ->
+			@fetch_media()
+			@fetch_comments()
+
+
+
+	class HomePageEventView extends Backbone.View
 
 		tagName: 'div'
 		className: 'row' # one row with 2 columns, one with text, one with a picture
@@ -99,7 +112,7 @@ jQuery ->
 			@listenTo(this.model, "change", this.render) #when the model is modified, we update the view
 
 		render: ->
-			console.log 'in eventView render', @model.toJSON()
+			#console.log 'in eventView render', @model.toJSON()
 			template = '''
 				<div class='col-md-7'>
 					<h2 class="featurette-heading"><%= name %></h2>
@@ -107,6 +120,9 @@ jQuery ->
 						<span class="text-muted"><b>at</b> Some Venue</span>
 					</h4>
 					<p class="lead"><%= description %></p>
+					<p>
+					  	<button type="button" class="btn btn-info btn-lg" id='info'>Tell Me More &raquo</button>
+					</p>
 				</div>
 				<div class='col-md-5'>
 					<img src="holder.js/350x350">
@@ -115,6 +131,14 @@ jQuery ->
 			$(@el).html(_.template(template, @model.toJSON()))
 			@
 
+		events:
+			'click #info': 'info_button_click'
+
+		info_button_click: ->
+			console.log 'info button was clicked!'
+			window.App.vent.trigger('event_information', @model.get('id')) 
+			#inform the application via Backbone Events that we want more information!
+
 
 
 	class Event extends Backbone.Model
@@ -122,23 +146,6 @@ jQuery ->
 
 		initialize:(options) ->
 			#console.log 'intialized event: ', @id
-			@mediaObjects = new MediaCollection
-				event_id: @id
-			@mediaObjects.fetch
-				async: true
-				success:(eve) ->
-				error:(res) ->
-					console.log 'Did not fetch Media Files: ', res
-			@comments = new CommentCollection
-				event_id: @id
-			@comments.fetch
-				async: true 
-				success:(e) ->
-				error:(e) ->
-					console.log 'Did not fetch Comments: ', e
-
-			#console.log 'event obj: ', @
-
 
 	
 	class EventCollection extends Backbone.Collection
