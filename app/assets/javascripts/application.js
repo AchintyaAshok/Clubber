@@ -17,6 +17,7 @@
 //= require jquery-1.11.1.min
 //= require bootstrap.min 
 //= require underscore-min.js
+//= require holder
 //= require backbone-min.js
 //= require require
 //= require main.js.coffee

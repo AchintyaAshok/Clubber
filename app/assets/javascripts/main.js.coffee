@@ -47,6 +47,7 @@ jQuery ->
 
 	class Home extends Backbone.View
 		tagName: 'div'
+		className: 'container-fluid'
 
 		initialize: =>
 			console.log "initialize backbone view -> Home"
@@ -64,16 +65,23 @@ jQuery ->
 
 		render: ->
 			#console.log 'in home render', @events
-			template = '''<h>WELCOME</h>'''
+			template = """
+				<div class="row jumbotron">
+					<h1>Welcome to your night.</h1>
+					<p class="lead">Discover night-life events that are happening around you now.</p>
+				</div>
+			"""
+			$(@el).html(_.template(template))
 			eventViewItems = []
 			for elem in @events.models
 				newView = new EventView
 					model: elem
 				eventViewItems.push newView #add it to our list of managed event views
+				$(@el).append(newView.render().el)
+				$(@el).append('''<div class='row padding'><br></div>''')
+				#console.log newView.render().el
 
-			console.log 'list of views managed: ', eventViewItems
-
-			$(@el).html(_.template(template))
+			#console.log 'list of views managed: ', eventViewItems
 			@	# last statement returns this
 
 		close: ->
@@ -82,14 +90,30 @@ jQuery ->
 
 	class EventView extends Backbone.View
 
+		tagName: 'div'
+		className: 'row' # one row with 2 columns, one with text, one with a picture
+
 		initialize:(options) =>
 			#console.log 'initialize eventView: ', options
 			@model = options.model
 			@listenTo(this.model, "change", this.render) #when the model is modified, we update the view
-			#console.log 'initializing event view'
-			#console.log "event view model: ", @model
 
 		render: ->
+			console.log 'in eventView render', @model.toJSON()
+			template = '''
+				<div class='col-md-7'>
+					<h2 class="featurette-heading"><%= name %></h2>
+					<h4>
+						<span class="text-muted"><b>at</b> Some Venue</span>
+					</h4>
+					<p class="lead"><%= description %></p>
+				</div>
+				<div class='col-md-5'>
+					<img src="holder.js/350x350">
+				</div>
+			'''
+			$(@el).html(_.template(template, @model.toJSON()))
+			@
 
 
 
