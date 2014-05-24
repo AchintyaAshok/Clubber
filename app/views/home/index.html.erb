@@ -53,7 +53,7 @@
 		if(window.hist == undefined || window.hist == false){
 			console.log("Starting Backbone History!")
 			window.router = new window.App.BackboneRouter();
-			window.hist = Backbone.history.start({pushState:true});
+			window.hist = Backbone.history.start();
 		}
 		else{
 			window.router.route('')

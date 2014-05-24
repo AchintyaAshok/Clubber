@@ -41,24 +41,19 @@ FirstEvent.venue = WebsterHall
 FirstEvent.save!
 
 #TestMedia = Media.find_or_create_by_name(name: "first media thing!", location: '~/Desktop/test.jpeg', size: 843776)
-TestMedia = FirstEvent.media.find_or_create_by_name(
-	name: "Event1's file", 
-	location: '~/Desktop/test.jpeg', 
-	size: 843776
-)
 FirstEvent.media.find_or_create_by_name(
 	name: "Webster1", 
-	location:'/Users/achintyaashok/Documents/My Projects/Clubber/MediaFiles/EventMedia/webster.jpg', 
+	location:'MediaFiles/EventMedia/webster.jpg', 
 	size: 500000
 )
 FirstEvent.media.find_or_create_by_name(
 	name: "Webster2", 
-	location:'/Users/achintyaashok/Documents/My Projects/Clubber/MediaFiles/EventMedia/webster2.jpg', 
+	location:'MediaFiles/EventMedia/webster2.jpg', 
 	size: 500000
 )
 FirstEvent.media.find_or_create_by_name(
 	name: "Webster3", 
-	location:'/Users/achintyaashok/Documents/My Projects/Clubber/MediaFiles/EventMedia/webster3.jpg', 
+	location:'MediaFiles/EventMedia/webster3.jpg', 
 	size: 500000
 )
 
@@ -83,17 +78,17 @@ Event3.save!
 
 Event3.media.find_or_create_by_name(
 	name: "Pacha1", 
-	location:'/Users/achintyaashok/Documents/My Projects/Clubber/MediaFiles/EventMedia/pacha.jpg', 
+	location:'MediaFiles/EventMedia/pacha.jpg', 
 	size: 500000
 )
 Event3.media.find_or_create_by_name(
 	name: "Pacha2", 
-	location:'/Users/achintyaashok/Documents/My Projects/Clubber/MediaFiles/EventMedia/pacha2.jpg', 
+	location:'MediaFiles/EventMedia/pacha2.jpg', 
 	size: 500000
 )
 Event3.media.find_or_create_by_name(
 	name: "Pacha3", 
-	location:'/Users/achintyaashok/Documents/My Projects/Clubber/MediaFiles/EventMedia/pacha3.jpg', 
+	location:'MediaFiles/EventMedia/pacha3.jpg', 
 	size: 500000
 )
 

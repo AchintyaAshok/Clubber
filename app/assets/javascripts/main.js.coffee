@@ -3,8 +3,8 @@ jQuery ->
 	class MainRouter extends Backbone.Router
 		routes:
 			'' : 'home'
-			'home': 'home'
-			'home/more_info/:id': 'event_information_page' #TOFIX ASKS FOR ID
+			'index': 'home'
+			'more_info/:id': 'event_information_page' #TOFIX ASKS FOR ID
 
 
 		# Basically a constructor for the AppRouter, this method retrieves the collection
@@ -22,7 +22,7 @@ jQuery ->
 
 		home: ->
 			view = new Home
-			@navigate('home')
+			@navigate('index')
 			view.fetch_information()
 			#@navigate('/index')
 			@show_view(view)
@@ -35,8 +35,9 @@ jQuery ->
 					model: options.model
 			else
 				view = new EventPageView
-					id: options.id
-			@navigate('home/more_info/' + options.id)
+					id: options
+				options = {id: options}
+			@navigate('more_info/' + options.id)
 			@show_view(view)
 
 	# MAIN HOMEPAGE VIEW
@@ -122,58 +123,21 @@ jQuery ->
 		render: =>
 			@fetch_media()
 			@fetch_comments()
-			console.log 'fetched stuff', @
+			#console.log 'fetched stuff', @
+			
 			template = '''
 			<div class='row'>
 				<h1><%= name %> <small> presented by <strong>Some Venue</strong></small></h1>
-			</div>
-			<div id="myCarousel" class="carousel slide" style="height:500px;" data-ride="carousel">
-			      <!-- Indicators -->
-			      <ol class="carousel-indicators">
-			        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-			        <li data-target="#myCarousel" data-slide-to="1"></li>
-			        <li data-target="#myCarousel" data-slide-to="2"></li>
-			      </ol>
-			      <div class="carousel-inner">
-			        <div class="item active">
-			          <img data-src="holder.js/900x500" alt="First slide">
-			          <div class="container">
-			            <div class="carousel-caption">
-			              <h1>Example headline.</h1>
-			              <p>Note: If you're viewing this page via a <code>file://</code> URL, the "next" and "previous" Glyphicon buttons on the left and right might not load/display properly due to web browser security rules.</p>
-			              <p><a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a></p>
-			            </div>
-			          </div>
-			        </div>
-			        <div class="item">
-			          <img data-src="holder.js/900x500" alt="Second slide">
-			          <div class="container">
-			            <div class="carousel-caption">
-			              <h1>Another example headline.</h1>
-			              <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-			              <p><a class="btn btn-lg btn-primary" href="#" role="button">Learn more</a></p>
-			            </div>
-			          </div>
-			        </div>
-			        <div class="item">
-			          <img data-src="holder.js/900x500" alt="Third slide">
-			          <div class="container">
-			            <div class="carousel-caption">
-			              <h1>One more for good measure.</h1>
-			              <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-			              <p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
-			            </div>
-			          </div>
-			        </div>
-			      </div>
-			      <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
-			      <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
-			    </div><!-- /.carousel -->
+			</div>'''
+			
+			if @mediaObjects.length > 0
+				template += @generate_carousel()
 
+			template += '''
 			</div class='row'>
 				<div class='col-md-8'>
 					<p class='lead'>Description Goes Here</p>
-				<div>
+				</div>
 				<div class='col-md-4'>
 					<p class='lead'>Comment Feed</p>
 				</div>
@@ -181,6 +145,34 @@ jQuery ->
 			'''
 			$(@el).html(_.template(template, @model.toJSON()))
 			@
+
+		generate_carousel: =>
+			console.log "generating carousel", @mediaObjects
+			template = '''
+			<div id="myCarousel" class="carousel slide" style="height:500px;" data-ride="carousel">
+			      <div class="carousel-inner">'''
+
+			for item in @mediaObjects.models
+				template += '''
+					<div class="item">
+					  <img src="<%= location %>">
+					</div>
+				'''
+				template = _.template(template, item.toJSON())
+
+			template += '''
+			      </div><!-- end carousel-inner -->
+			      '''
+			if @mediaObjects.length > 1
+				template += '''
+			      <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+			      <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+			      '''
+
+			template += '''
+			    </div><!-- /.carousel -->'''
+
+			return template
 
 		close: ->
 			@remove()
@@ -231,11 +223,12 @@ jQuery ->
 		urlRoot: '/events'
 
 		initialize:(options) ->
-			#console.log 'intialized event: ', @id
+			if options? then @id = options.id
+			console.log 'fetching event', @id
 
 	
 	class EventCollection extends Backbone.Collection
-		urlRoot: '/events'
+		url: '/events'
 		model: Event
 
 
@@ -248,7 +241,7 @@ jQuery ->
 				@event_id = options.event_id
 
 	class MediaCollection extends Backbone.Collection
-		urlRoot: '/media'
+		url: '/media'
 		model: Media
 
 		initialize:(options) =>
@@ -260,14 +253,14 @@ jQuery ->
 
 
 	class Comment extends Backbone.Model
-		urlRoot: '/comments'
+		url: '/comments'
 
 		initialize:(options) ->
 			if options? and options.event_id?
 				@url = '/events/' + options.event_id + '/comments/' + @id
 
 	class CommentCollection extends Backbone.Collection
-		urlRoot: '/comments'
+		url: '/comments'
 		model: Comment
 
 		initialize:(options) =>
