@@ -32,7 +32,7 @@ TomorrowLand = Venue.find_or_create_by_name!(
 )
 
 FirstEvent = Event.find_or_create_by_name!(
-	name: 'First Club Event!', 
+	name: 'House Party with Just Blaze / DJ Soul / Electric Punanny / Va$htie / Oscar / DJ Sliink / Dirty South Joe', 
 	description: 'Aliquam erat turpis, euismod sit amet tincidunt ut, convallis eu mi. Mauris dignissim eleifend nisl vel tincidunt. Praesent quis tortor dignissim nunc ultrices volutpat eget at mi. Nulla sit amet arcu lacus. Vestibulum eget lacus sagittis, lacinia nibh vel, consectetur felis. In sed diam euismod, facilisis orci vel, congue dolor.',
 	begins: DateTime.new(2014, 8, 14, 20, 0), #starts at 10pm
 	ends: DateTime.new(2014, 8, 15, 2, 0) #ends at 2am

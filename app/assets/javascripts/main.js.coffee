@@ -209,15 +209,21 @@ jQuery ->
 			template += '''
 			</div class='row'>
 				<div class='col-md-8'>
+
 					<div class='row'>
 						<div class='col-md-12'>
 							<span>
-								<h3>About this event...</h3>
+								<h3>What's Happening?</h3>
 								<p class='lead'><%= description %></p>
 							</span>
+							<br><hr><br>
 						</div>
 					</div>
-				</div>'''
+
+					<!-- venue information -->'''
+			template += @generate_venue_template()
+			template += '''
+			</div><!-- end row -->'''
 
 			template += @generate_comment_template()
 			template += '''
@@ -252,11 +258,27 @@ jQuery ->
 			<% } %>'''
 			template += 
 			'''</div><!-- end main container for comments -->'''
-			options = {comments: @comments.toJSON()}
-			#console.log options
 			template = _.template(template, {comments: @comments.toJSON()})
-			#console.log 'comment template', template
+
 			return template
+
+		generate_venue_template: =>
+			# this creates the venue view section of the event page
+			template = '''
+			<div class='row'>
+				<div class='col-md-12'>
+					<h3>Where Is It?</h3><br>
+					<h4><%= name %></h4>
+					<p><%= description %></p><br>
+					<address>
+						<%= address %>
+					</address>
+				</div>
+			</div>
+			'''
+			template = _.template(template, @venue.toJSON())
+			return template
+
 
 		generate_carousel: =>
 			console.log "generating carousel", @mediaObjects.toJSON()
