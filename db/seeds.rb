@@ -105,14 +105,33 @@ Event4.save!
 
 commentA = Comment.find_or_create_by_text!(
 	event_id: 1, 
-	text: "this is the first comment ever."
+	text: "this is the first comment ever. I am an asshole."
 )
 commentB = Comment.find_or_create_by_text!(
 	event_id: 1, 
-	text: "second!"
+	text: "Seriously. Does anyone else just have mounds and mounds of respect for Tyrion Lannister?"
 )
 commentC = Comment.find_or_create_by_text!(
 	event_id: 1, 
-	text: "the awkward third comment"
+	text: "why does the song cover over the part where lock is lecturing jamie?"
 )
+Comment.find_or_create_by_text!(
+	event_id: 1, 
+	text: "When I'm driving late at night and this song comes on the radio while I'm stopped at a red light with absolutely no one else around, I'm always very tempted to just run the red light...﻿"
+)
+Comment.find_or_create_by_text!(
+	event_id: 1, 
+	text: "Red Lights is such an amazing song. I love Tiesto and he inspires me. I just wanted to say that I covered this song and would be more than honored for everyone to check it out. Thanks so much guys, and give a thumbs up for Red Lights."
+)
+Comment.find_or_create_by_text!(
+	event_id: 1, 
+	text: "Who is that guy? I don't recognize him anymore as I haven't listened any of his new song which was made in past ~4 years... New generation will never know the 'real tiesto...'﻿"
+)
+Comment.find_or_create_by_text!(
+	event_id: 1, 
+	text: "Not that i don't like, but we'll be honest, this song is ridiculously mainstream and generic."
+)
+
+
+
 

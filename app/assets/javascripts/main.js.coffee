@@ -84,6 +84,60 @@ jQuery ->
 			x.remove() for x in @eventViewItems #remove all the child views
 			@remove()
 
+	# Sub-view of Home View
+	class HomePageEventView extends Backbone.View
+
+		tagName: 'div'
+		className: 'row mini-event' # one row with 2 columns, one with text, one with a picture
+
+		initialize:(options) =>
+			#console.log 'initialize eventView: ', options
+			@model = options.model
+			@switchPosition = options.switchImagePos
+			@listenTo(this.model, "change", this.render) #when the model is modified, we update the view
+
+		render: ->
+			#console.log 'in eventView render', @model.toJSON()
+			headingDescTemplate = '''
+			<div class='col-md-7'>
+				<h2 class="featurette-heading"><%= name %></h2>
+				<h4>
+					<span class="text-muted"><b>at</b> Some Venue</span>
+				</h4>
+				<p class="lead"><%= description %></p>
+				<p>
+				  	<button type="button" class="btn btn-info btn-lg" id='info'>Tell Me More &raquo</button>
+				</p>
+			</div>
+			'''
+			imageItemTemplate = '''
+			<div class='col-md-5'>
+				<img src="holder.js/350x350">
+			</div>
+			'''
+			
+			template = ''
+			# just some fance position switching between the text and event image
+			if @switchPosition 
+				#console.log 'switchPosition=true'
+				template += imageItemTemplate
+				template += headingDescTemplate
+			else
+				#console.log 'switchPosition=false'
+				template += headingDescTemplate
+				template += imageItemTemplate
+
+			$(@el).html(_.template(template, @model.toJSON()))
+			@
+
+		events:
+			'click #info': 'info_button_click'
+
+		info_button_click: ->
+			console.log 'info button was clicked!', @model.get('id')
+			window.App.vent.trigger('event_information', {id: @model.get('id'), model: @model}) 
+			#inform the application via Backbone Events that we want more information!
+
 
 	# PAGE TO VIEW MORE INFORMATION FOR EVENTS
 	class EventPageView extends Backbone.View
@@ -140,8 +194,16 @@ jQuery ->
 			template += '''
 			</div class='row'>
 				<div class='col-md-8'>
-					<p class='lead'><%= description %></p>
+					<div class='row'>
+						<div class='col-md-12'>
+							<span>
+								<h3>About This Event</h3>
+								<p class='lead'><%= description %></p>
+							</span>
+						</div>
+					</div>
 				</div>'''
+
 			template += @generate_comment_template()
 			template += '''
 			</div><!-- end row -->
@@ -152,7 +214,17 @@ jQuery ->
 
 		generate_comment_template: =>
 			console.log 'generate_comment_template', @comments.toJSON()
-			template = '''<div class='col-md-4'>'''
+			template = 
+			'''<div class='col-md-4'>
+					<div class='row'>
+						<div class='col-md-12'>
+							<span>
+								<h3>The Buzz</h3>
+								<p class='small muted'><i>Here's what people are saying...</i></p>
+							</span>
+						</div>
+					</div>
+			'''
 			template += '''
 			<% for(var i=0; i<comments.length; i++){ %>
 				<div class="row">
@@ -163,7 +235,8 @@ jQuery ->
 				    </div>
 				</div>
 			<% } %>'''
-			template += '''</div><!-- end main container for comments -->'''
+			template += 
+			'''</div><!-- end main container for comments -->'''
 			options = {comments: @comments.toJSON()}
 			console.log options
 			template = _.template(template, {comments: @comments.toJSON()})
@@ -223,62 +296,6 @@ jQuery ->
 			@remove()
 
 
-
-	class HomePageEventView extends Backbone.View
-
-		tagName: 'div'
-		className: 'row mini-event' # one row with 2 columns, one with text, one with a picture
-
-		initialize:(options) =>
-			#console.log 'initialize eventView: ', options
-			@model = options.model
-			@switchPosition = options.switchImagePos
-			@listenTo(this.model, "change", this.render) #when the model is modified, we update the view
-
-		render: ->
-			#console.log 'in eventView render', @model.toJSON()
-			headingDescTemplate = '''
-			<div class='col-md-7'>
-				<h2 class="featurette-heading"><%= name %></h2>
-				<h4>
-					<span class="text-muted"><b>at</b> Some Venue</span>
-				</h4>
-				<p class="lead"><%= description %></p>
-				<p>
-				  	<button type="button" class="btn btn-info btn-lg" id='info'>Tell Me More &raquo</button>
-				</p>
-			</div>
-			'''
-			imageItemTemplate = '''
-			<div class='col-md-5'>
-				<img src="holder.js/350x350">
-			</div>
-			'''
-			
-			template = ''
-			# just some fance position switching between the text and event image
-			if @switchPosition 
-				#console.log 'switchPosition=true'
-				template += imageItemTemplate
-				template += headingDescTemplate
-			else
-				#console.log 'switchPosition=false'
-				template += headingDescTemplate
-				template += imageItemTemplate
-
-			$(@el).html(_.template(template, @model.toJSON()))
-			@
-
-		events:
-			'click #info': 'info_button_click'
-
-		info_button_click: ->
-			console.log 'info button was clicked!', @model.get('id')
-			window.App.vent.trigger('event_information', {id: @model.get('id'), model: @model}) 
-			#inform the application via Backbone Events that we want more information!
-
-
-
 	class Event extends Backbone.Model
 		urlRoot: '/events'
 
@@ -300,6 +317,7 @@ jQuery ->
 			if options? and options.event_id?
 				@event_id = options.event_id
 
+
 	class MediaCollection extends Backbone.Collection
 		url: '/media'
 		model: Media
@@ -318,6 +336,7 @@ jQuery ->
 		initialize:(options) ->
 			if options? and options.event_id?
 				@url = '/events/' + options.event_id + '/comments/' + @id
+
 
 	class CommentCollection extends Backbone.Collection
 		url: '/comments'
