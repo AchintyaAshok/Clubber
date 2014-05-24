@@ -3,10 +3,10 @@ Clubber::Application.routes.draw do
   # See how all your routes lay out with "rake routes".
 
   # standard REST resources:
-  resources :venues
   resources :events do
     resources :comments, :media
   end
+  resources :venues
 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'

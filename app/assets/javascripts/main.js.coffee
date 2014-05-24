@@ -18,6 +18,7 @@ jQuery ->
 			if @currentView is not null then @currentView.close()
 			@currentView = newView
 			$('#container-main').html @currentView.render().el
+			$('.carousel').carousel({interval:2000})
 
 
 		home: ->
@@ -61,19 +62,22 @@ jQuery ->
 		render: ->
 			template = """
 				<div class="row jumbotron">
-					<h1>Welcome to your night.</h1>
+					<h1>Welcome to Clubber.</h1>
 					<p class="lead">Discover night-life events that are happening around you now.</p>
 				</div>
 			"""
+			switchImagePos = true
 			$(@el).html(_.template(template))
 			@eventViewItems = []
 			for elem in @events.models
 				newView = new HomePageEventView
 					model: elem
+					switchImagePos: switchImagePos
 				@eventViewItems.push newView #add it to our list of managed event views
 				$(@el).append(newView.render().el)
-				$(@el).append('''<div class='row padding'><br></div>''')
-
+				$(@el).append('''<div class='row padding'><br><hr><br></div>''')
+				if switchImagePos then switchImagePos = false
+				else switchImagePos = true
 			@	# last statement returns this
 
 		close: ->
@@ -126,51 +130,92 @@ jQuery ->
 			#console.log 'fetched stuff', @
 			
 			template = '''
-			<div class='row'>
+			<div class='page-header'>
 				<h1><%= name %> <small> presented by <strong>Some Venue</strong></small></h1>
 			</div>'''
-			
-			if @mediaObjects.length > 0
-				template += @generate_carousel()
+
+			# if @mediaObjects.length > 0
+			# 	template += @generate_carousel()
 
 			template += '''
 			</div class='row'>
 				<div class='col-md-8'>
-					<p class='lead'>Description Goes Here</p>
-				</div>
-				<div class='col-md-4'>
-					<p class='lead'>Comment Feed</p>
-				</div>
-			</div>
+					<p class='lead'><%= description %></p>
+				</div>'''
+			template += @generate_comment_template()
+			template += '''
+			</div><!-- end row -->
 			'''
+
 			$(@el).html(_.template(template, @model.toJSON()))
 			@
 
+		generate_comment_template: =>
+			console.log 'generate_comment_template', @comments.toJSON()
+			template = '''<div class='col-md-4'>'''
+			template += '''
+			<% for(var i=0; i<comments.length; i++){ %>
+				<div class="row">
+					<div class='col-md-12'>
+					    <a class="thumbnail">
+					      <p><%= comments[i].text %></p>
+					    </a>
+				    </div>
+				</div>
+			<% } %>'''
+			template += '''</div><!-- end main container for comments -->'''
+			options = {comments: @comments.toJSON()}
+			console.log options
+			template = _.template(template, {comments: @comments.toJSON()})
+			console.log 'comment template', template
+			return template
+
 		generate_carousel: =>
-			console.log "generating carousel", @mediaObjects
+			console.log "generating carousel", @mediaObjects.toJSON()
 			template = '''
-			<div id="myCarousel" class="carousel slide" style="height:500px;" data-ride="carousel">
-			      <div class="carousel-inner">'''
-
-			for item in @mediaObjects.models
-				template += '''
+			<% if (models.length > 0){ %>
+			<div id="myCarousel" class="carousel slide">
+				<ol class="carousel-indicators">
+				<% for(var i=0; i<models.length; i++){ %>
+					<li data-target="#myCarousel" data-slide-to="<%= i %>"></li>
+				<% } %>
+				</ol>
+				<div class="carousel-inner" style="height:600px; width:100%">
+				<% for(var i=0; i<models.length; i++){ %>
 					<div class="item">
-					  <img src="<%= location %>">
+						<img class='image-responsive' style="margin:0 auto;" src="<%= models[i].location %>" alt="">
 					</div>
-				'''
-				template = _.template(template, item.toJSON())
+				<% } %>
+				</div>
+				<a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+				<a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+			</div>
+			<% } %>'''
+			return _.template(template, {models: @mediaObjects.toJSON()})
 
-			template += '''
-			      </div><!-- end carousel-inner -->
-			      '''
-			if @mediaObjects.length > 1
-				template += '''
-			      <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
-			      <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
-			      '''
+			# template = '''
+			# <div id="myCarousel" class="carousel slide" style="height:500px;" data-ride="carousel">
+			#       <div class="carousel-inner">'''
 
-			template += '''
-			    </div><!-- /.carousel -->'''
+			# for item in @mediaObjects.models
+			# 	template += '''
+			# 		<div class="item">
+			# 		  <img src="<%= location %>">
+			# 		</div>
+			# 	'''
+			# 	template = _.template(template, item.toJSON())
+
+			# template += '''
+			#       </div><!-- end carousel-inner -->
+			#       '''
+			# if @mediaObjects.length > 1
+			# 	template += '''
+			#       <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+			#       <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+			#       '''
+
+			# template += '''
+			#     </div><!-- /.carousel -->'''
 
 			return template
 
@@ -187,25 +232,40 @@ jQuery ->
 		initialize:(options) =>
 			#console.log 'initialize eventView: ', options
 			@model = options.model
+			@switchPosition = options.switchImagePos
 			@listenTo(this.model, "change", this.render) #when the model is modified, we update the view
 
 		render: ->
 			#console.log 'in eventView render', @model.toJSON()
-			template = '''
-				<div class='col-md-7'>
-					<h2 class="featurette-heading"><%= name %></h2>
-					<h4>
-						<span class="text-muted"><b>at</b> Some Venue</span>
-					</h4>
-					<p class="lead"><%= description %></p>
-					<p>
-					  	<button type="button" class="btn btn-info btn-lg" id='info'>Tell Me More &raquo</button>
-					</p>
-				</div>
-				<div class='col-md-5'>
-					<img src="holder.js/350x350">
-				</div>
+			headingDescTemplate = '''
+			<div class='col-md-7'>
+				<h2 class="featurette-heading"><%= name %></h2>
+				<h4>
+					<span class="text-muted"><b>at</b> Some Venue</span>
+				</h4>
+				<p class="lead"><%= description %></p>
+				<p>
+				  	<button type="button" class="btn btn-info btn-lg" id='info'>Tell Me More &raquo</button>
+				</p>
+			</div>
 			'''
+			imageItemTemplate = '''
+			<div class='col-md-5'>
+				<img src="holder.js/350x350">
+			</div>
+			'''
+			
+			template = ''
+			# just some fance position switching between the text and event image
+			if @switchPosition 
+				#console.log 'switchPosition=true'
+				template += imageItemTemplate
+				template += headingDescTemplate
+			else
+				#console.log 'switchPosition=false'
+				template += headingDescTemplate
+				template += imageItemTemplate
+
 			$(@el).html(_.template(template, @model.toJSON()))
 			@
 
