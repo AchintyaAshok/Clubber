@@ -154,7 +154,7 @@ jQuery ->
 					async: false
 					success:(e) ->
 					error:(e) ->
-						console.log 'EventPageView::Did not fetch Event', e
+						console.log 'EventPageView::init, Did not fetch Event', e
 			else
 				@model = options.model
 
@@ -166,7 +166,7 @@ jQuery ->
 				success:(eve) ->
 					return @
 				error:(res) ->
-					console.log 'Did not fetch Media Files: ', res
+					console.log 'EventPageView::fetch_media, Did not fetch Media Files: ', res
 
 		fetch_comments: =>
 			@comments = new CommentCollection
@@ -176,17 +176,32 @@ jQuery ->
 				success:(e) ->
 					return @
 				error:(e) ->
-					console.log 'Did not fetch Comments: ', e
+					console.log 'EventPageView::fetch_comments, Did not fetch Comments: ', e
+
+		fetch_venue: =>
+			@venue = new Venue
+				id: @model.get('venue_id')
+			@venue.fetch
+				async: false
+				success:(e) ->
+				error:(e) ->
+					console.log 'EventPageView::fetch_venue, Did not fetch venue', e
 
 		render: =>
 			@fetch_media()
 			@fetch_comments()
-			#console.log 'fetched stuff', @
-			
+			@fetch_venue()
+			console.log 'in render, fetched venue', @venue
+
 			template = '''
 			<div class='page-header'>
-				<h1><%= name %> <small> presented by <strong>Some Venue</strong></small></h1>
+				<h1><%= name %> <small> <em>presented by </em>'''
+			# add the name of the venue
+			venueNameAddition = 
+				'''<strong><%= venue_name %></strong></small></h1>
 			</div>'''
+			venueNameAddition = _.template(venueNameAddition, {venue_name: @venue.get('name')})
+			template += venueNameAddition
 
 			# if @mediaObjects.length > 0
 			# 	template += @generate_carousel()
@@ -197,7 +212,7 @@ jQuery ->
 					<div class='row'>
 						<div class='col-md-12'>
 							<span>
-								<h3>About This Event</h3>
+								<h3>About this event...</h3>
 								<p class='lead'><%= description %></p>
 							</span>
 						</div>
@@ -213,7 +228,7 @@ jQuery ->
 			@
 
 		generate_comment_template: =>
-			console.log 'generate_comment_template', @comments.toJSON()
+			#console.log 'generate_comment_template', @comments.toJSON()
 			template = 
 			'''<div class='col-md-4'>
 					<div class='row'>
@@ -238,9 +253,9 @@ jQuery ->
 			template += 
 			'''</div><!-- end main container for comments -->'''
 			options = {comments: @comments.toJSON()}
-			console.log options
+			#console.log options
 			template = _.template(template, {comments: @comments.toJSON()})
-			console.log 'comment template', template
+			#console.log 'comment template', template
 			return template
 
 		generate_carousel: =>
@@ -351,10 +366,14 @@ jQuery ->
 
 
 	class Venue extends Backbone.Model
-		url: '/venues'
+		urlRoot: '/venues'
 
 		initialize:(options) ->
 			console.log 'initializing venues'
+			if options? and options.id?
+				@id = options.id
+				# fetch the venue pertaining to this venue
+
 
 
 	window.App =
